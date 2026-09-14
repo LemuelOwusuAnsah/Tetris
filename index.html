@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0ea5e9">
+    <title>Tetris · A Lemsy Games Classic</title>
+    <meta name="description" content="Tetris — the classic block puzzle game by Lemsy Games.">
+    <meta name="author" content="Lemuel Owusu-Ansah">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/menu.css">
+</head>
+<body class="menu-body">
+
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-content">
+            <div class="intro-logos" id="introLogos">
+                <div class="intro-word intro-lemsy">LEMSY</div>
+                <div class="intro-word intro-games">GAMES</div>
+            </div>
+            <div class="intro-subtitle" id="introSubtitle">
+                <span>Games by Lemuel Owusu-Ansah</span>
+                <span class="small-caps">A Lemsy Games Production</span>
+            </div>
+            <div class="intro-loading" id="introLoading">
+                <div class="loading-bar">
+                    <div class="loading-bar-fill" id="loadingBarFill"></div>
+                </div>
+                <div class="loading-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <div class="loading-text">Loading</div>
+            </div>
+            <div class="intro-skip">Click anywhere to skip</div>
+        </div>
+    </div>
+
+    <main class="menu-screen hidden" id="menuScreen">
+        <div class="menu-content">
+            <div class="menu-logo">
+                <div class="menu-title">TETRIS</div>
+                <div class="menu-subtitle">A Lemsy Games Classic</div>
+            </div>
+
+            <div class="menu-actions">
+                <a href="game.html" class="menu-btn menu-btn-primary" id="menuPlayBtn">
+                    <span class="menu-btn-icon">▶</span>
+                    <span class="menu-btn-text">Play</span>
+                </a>
+                <button class="menu-btn" id="menuLeaderboardBtn">
+                    <span class="menu-btn-icon">🏆</span>
+                    <span class="menu-btn-text">Leaderboard</span>
+                </button>
+                <button class="menu-btn" id="menuSoundBtn">
+                    <span class="menu-btn-icon">🎵</span>
+                    <span class="menu-btn-text">Sound Settings</span>
+                </button>
+                <button class="menu-btn" id="menuProfileBtn">
+                    <span class="menu-btn-icon">👤</span>
+                    <span class="menu-btn-text">Player Profile</span>
+                </button>
+            </div>
+
+            <div class="menu-footer">
+                <div class="menu-player" id="menuPlayerChip">
+                    <span class="menu-player-avatar" id="menuAvatar">🦊</span>
+                    <span class="menu-player-name" id="menuName">Choose your player</span>
+                </div>
+                <div class="menu-hint">Use arrow keys or swipe to play</div>
+            </div>
+        </div>
+    </main>
+
+    <div class="modal-backdrop hidden" id="modalBackdrop"></div>
+
+    <div class="modal hidden" id="soundModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">🎵 Sound Settings</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-row">
+                <span class="setting-label">Music</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="musicToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Sound effects</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="sfxToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row setting-row-column">
+                <span class="setting-label">Track</span>
+                <div class="track-list" id="trackList"></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Volume</span>
+                <input type="range" id="volumeSlider" min="0" max="100" value="60" class="range-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="leaderboardModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">🏆 Leaderboard</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="leaderboardList"></div>
+            <div class="modal-actions">
+                <button class="secondary-btn" id="clearLeaderboardBtn">Clear all</button>
+                <button class="primary-btn" data-close-modal>Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="profileModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">👤 Choose your player</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-row setting-row-column">
+                <span class="setting-label">Your name</span>
+                <input type="text" id="profileNameInput" class="text-input" placeholder="Enter your name" maxlength="20" autocomplete="off">
+            </div>
+            <div class="setting-row setting-row-column">
+                <span class="setting-label">Pick an avatar</span>
+                <div class="avatar-grid" id="avatarGrid"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="primary-btn full-width" id="profileSaveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/intro.js"></script>
+    <script src="js/menu.js"></script>
+</body>
+</html>

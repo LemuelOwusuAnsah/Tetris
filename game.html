@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#0ea5e9">
+    <title>Play · Tetris</title>
+    <meta name="description" content="Tetris — the classic block puzzle game by Lemsy Games.">
+    <meta name="author" content="Lemuel Owusu-Ansah">
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🧩</text></svg>">
+    <link rel="stylesheet" href="css/shared.css">
+    <link rel="stylesheet" href="css/game.css">
+</head>
+<body class="game-body">
+
+    <div class="intro-screen" id="introScreen">
+        <div class="intro-content">
+            <div class="intro-logos" id="introLogos">
+                <div class="intro-word intro-lemsy">LEMSY</div>
+                <div class="intro-word intro-games">GAMES</div>
+            </div>
+            <div class="intro-subtitle" id="introSubtitle">
+                <span>Games by Lemuel Owusu-Ansah</span>
+                <span class="small-caps">A Lemsy Games Production</span>
+            </div>
+            <div class="intro-loading" id="introLoading">
+                <div class="loading-bar">
+                    <div class="loading-bar-fill" id="loadingBarFill"></div>
+                </div>
+                <div class="loading-dots">
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                    <span class="dot"></span>
+                </div>
+                <div class="loading-text">Loading</div>
+            </div>
+            <div class="intro-skip">Click anywhere to skip</div>
+        </div>
+    </div>
+
+    <div class="game-wrapper hidden" id="gameWrapper">
+
+        <header class="game-header">
+            <div class="container">
+                <a href="index.html" class="home-btn" id="homeBtn" aria-label="Back to menu" title="Back to menu">
+                    <span class="home-btn-icon">⌂</span>
+                </a>
+                <h1 class="game-title">Tetris</h1>
+                <div class="header-right">
+                    <button class="player-chip" id="playerChip" aria-label="Edit player profile" title="Edit profile">
+                        <span class="player-chip-avatar" id="headerAvatar">🦊</span>
+                        <span class="player-chip-name" id="headerName">Anonymous</span>
+                    </button>
+                    <div class="header-actions">
+                        <button class="icon-btn" id="pauseBtn" aria-label="Pause game" title="Pause (P)">
+                            <span class="icon-pause">⏸</span>
+                            <span class="icon-play hidden">▶</span>
+                        </button>
+                        <button class="icon-btn" id="soundBtn" aria-label="Sound settings" title="Sound settings">
+                            <span class="icon-sound-on">🔊</span>
+                            <span class="icon-sound-off hidden">🔇</span>
+                        </button>
+                        <button class="icon-btn icon-btn-danger" id="quitBtn" aria-label="Quit game" title="Quit game">
+                            <span class="icon-quit">✕</span>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <main class="game-main">
+            <div class="game-layout">
+
+                <aside class="side-panel">
+                    <div class="stat-card">
+                        <div class="stat-label">Score</div>
+                        <div class="stat-value" id="scoreDisplay">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Lines</div>
+                        <div class="stat-value" id="linesDisplay">0</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-label">Level</div>
+                        <div class="stat-value" id="levelDisplay">1</div>
+                    </div>
+                    <div class="stat-card stat-card-high">
+                        <div class="stat-label">Best</div>
+                        <div class="stat-value" id="highScoreDisplay">0</div>
+                    </div>
+                </aside>
+
+                <section class="board-wrap" aria-label="Game board">
+                    <canvas id="boardCanvas" width="300" height="600" aria-label="Tetris board"></canvas>
+                    <div class="board-overlay hidden" id="boardOverlay">
+                        <div class="overlay-content">
+                            <h2 class="overlay-title" id="overlayTitle">Paused</h2>
+                            <p class="overlay-text" id="overlayText">Press P to resume</p>
+                            <div class="overlay-actions">
+                                <button class="primary-btn" id="overlayBtn">Resume</button>
+                                <button class="secondary-btn hidden" id="overlayRestartBtn">Restart</button>
+                                <button class="secondary-btn hidden" id="overlayQuitBtn">Menu</button>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <aside class="side-panel">
+                    <div class="next-card">
+                        <div class="stat-label">Next</div>
+                        <canvas id="nextCanvas" width="120" height="120" aria-label="Next piece"></canvas>
+                    </div>
+                    <div class="controls-card">
+                        <div class="stat-label">Controls</div>
+                        <ul class="controls-list">
+                            <li><kbd>←</kbd><kbd>→</kbd> Move</li>
+                            <li><kbd>↓</kbd> Soft drop</li>
+                            <li><kbd>↑</kbd> Rotate</li>
+                            <li><kbd>Space</kbd> Hard drop</li>
+                            <li><kbd>P</kbd> Pause</li>
+                            <li><kbd>R</kbd> Restart</li>
+                        </ul>
+                    </div>
+                    <button class="secondary-btn full-width" id="leaderboardOpenBtn">
+                        🏆 Leaderboard
+                    </button>
+                </aside>
+
+            </div>
+
+            <div class="touch-controls" id="touchControls">
+                <button class="touch-btn" data-action="left" aria-label="Move left">◀</button>
+                <button class="touch-btn" data-action="rotate" aria-label="Rotate">↻</button>
+                <button class="touch-btn" data-action="right" aria-label="Move right">▶</button>
+                <button class="touch-btn" data-action="down" aria-label="Soft drop">▼</button>
+                <button class="touch-btn touch-btn-wide" data-action="drop" aria-label="Hard drop">⤓ Drop</button>
+            </div>
+        </main>
+
+        <footer class="game-footer">
+            <p>© Lemsy Games · Built by Lemuel Owusu-Ansah</p>
+        </footer>
+
+    </div>
+
+    <div class="modal-backdrop hidden" id="modalBackdrop"></div>
+
+    <div class="modal hidden" id="soundModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">🎵 Sound Settings</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-row">
+                <span class="setting-label">Music</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="musicToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Sound effects</span>
+                <label class="toggle-switch">
+                    <input type="checkbox" id="sfxToggle">
+                    <span class="toggle-slider"></span>
+                </label>
+            </div>
+            <div class="setting-row setting-row-column">
+                <span class="setting-label">Track</span>
+                <div class="track-list" id="trackList"></div>
+            </div>
+            <div class="setting-row">
+                <span class="setting-label">Volume</span>
+                <input type="range" id="volumeSlider" min="0" max="100" value="60" class="range-input">
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="leaderboardModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">🏆 Leaderboard</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div id="leaderboardList"></div>
+            <div class="modal-actions">
+                <button class="secondary-btn" id="clearLeaderboardBtn">Clear all</button>
+                <button class="primary-btn" data-close-modal>Close</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="profileModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">👤 Choose your player</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="setting-row setting-row-column">
+                <span class="setting-label">Your name</span>
+                <input type="text" id="profileNameInput" class="text-input" placeholder="Enter your name" maxlength="20" autocomplete="off">
+            </div>
+            <div class="setting-row setting-row-column">
+                <span class="setting-label">Pick an avatar</span>
+                <div class="avatar-grid" id="avatarGrid"></div>
+            </div>
+            <div class="modal-actions">
+                <button class="primary-btn full-width" id="profileSaveBtn">Save</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="quitModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">⚠️ Quit Game?</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="quit-message">What would you like to do with your current game?</p>
+            <div class="quit-score-preview">
+                <div class="quit-stat">
+                    <span class="quit-stat-label">Score</span>
+                    <span class="quit-stat-value" id="quitScorePreview">0</span>
+                </div>
+                <div class="quit-stat">
+                    <span class="quit-stat-label">Lines</span>
+                    <span class="quit-stat-value" id="quitLinesPreview">0</span>
+                </div>
+                <div class="quit-stat">
+                    <span class="quit-stat-label">Level</span>
+                    <span class="quit-stat-value" id="quitLevelPreview">1</span>
+                </div>
+            </div>
+            <div class="quit-actions">
+                <button class="keep-btn" id="quitKeepBtn">
+                    <span class="quit-icon">⏸</span>
+                    <span class="quit-btn-label">Keep Progress</span>
+                    <span class="quit-btn-desc">Pause and continue later</span>
+                </button>
+                <button class="save-quit-btn" id="quitSaveBtn">
+                    <span class="quit-icon">💾</span>
+                    <span class="quit-btn-label">Save &amp; Quit</span>
+                    <span class="quit-btn-desc">Add score to leaderboard</span>
+                </button>
+                <button class="discard-btn" id="quitDiscardBtn">
+                    <span class="quit-icon">🗑️</span>
+                    <span class="quit-btn-label">Discard &amp; Quit</span>
+                    <span class="quit-btn-desc">Lose this game's progress</span>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal hidden" id="restartModal" role="dialog">
+        <div class="modal-header">
+            <h3 class="modal-title">🔄 Restart Game?</h3>
+            <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+        </div>
+        <div class="modal-body">
+            <p class="quit-message">Current progress will be lost. Continue?</p>
+            <div class="restart-actions">
+                <button class="secondary-btn" data-close-modal>Cancel</button>
+                <button class="primary-btn" id="restartConfirmBtn">Restart</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/storage.js"></script>
+    <script src="js/sound.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/tetris.js"></script>
+    <script src="js/input.js"></script>
+    <script src="js/intro.js"></script>
+</body>
+</html>
